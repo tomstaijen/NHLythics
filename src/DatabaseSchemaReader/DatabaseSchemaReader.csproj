@@ -12,10 +12,14 @@
     <AssemblyName>DatabaseSchemaReader</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
   </PropertyGroup>
@@ -51,35 +55,93 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CodeGen\ClassBuilder.cs" />
-    <Compile Include="CodeGen\ClassWriter.cs" />
-    <Compile Include="CodeGen\CodeFirst\CodeFirstContextWriter.cs" />
-    <Compile Include="CodeGen\CodeFirst\CodeFirstMappingWriter.cs" />
-    <Compile Include="CodeGen\CodeFirst\RiaServicesWriter.cs" />
-    <Compile Include="CodeGen\CodeTarget.cs" />
-    <Compile Include="CodeGen\CodeWriter.cs" />
-    <Compile Include="CodeGen\CodeWriterSettings.cs" />
-    <Compile Include="CodeGen\CollectionNamer.cs" />
-    <Compile Include="CodeGen\DataAnnotationWriter.cs" />
-    <Compile Include="CodeGen\DataTypeWriter.cs" />
-    <Compile Include="CodeGen\INamer.cs" />
-    <Compile Include="CodeGen\MappingNamer.cs" />
-    <Compile Include="CodeGen\Namer.cs" />
-    <Compile Include="CodeGen\NHibernate\FluentMappingWriter.cs" />
-    <Compile Include="CodeGen\ICollectionNamer.cs" />
-    <Compile Include="CodeGen\NHibernate\MappingWriter.cs" />
-    <Compile Include="CodeGen\NameFixer.cs" />
-    <Compile Include="CodeGen\Nester.cs" />
-    <Compile Include="CodeGen\OverrideWriter.cs" />
-    <Compile Include="CodeGen\PluralizingNamer.cs" />
-    <Compile Include="CodeGen\PrepareSchemaNames.cs" />
-    <Compile Include="CodeGen\Procedures\ProcedureWriter.cs" />
-    <Compile Include="CodeGen\ProjectWriter.cs" />
-    <Compile Include="CodeGen\Procedures\SprocLogic.cs" />
-    <Compile Include="CodeGen\Procedures\SprocResultType.cs" />
-    <Compile Include="CodeGen\Procedures\SprocResultWriter.cs" />
-    <Compile Include="CodeGen\Procedures\SprocWriter.cs" />
-    <Compile Include="CodeGen\UnitTestWriter.cs" />
+    <Compile Include="CodeGen\ClassBuilder.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CodeGen\ClassWriter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CodeGen\CodeFirst\CodeFirstContextWriter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CodeGen\CodeFirst\CodeFirstMappingWriter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CodeGen\CodeFirst\RiaServicesWriter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CodeGen\CodeTarget.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CodeGen\CodeWriter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CodeGen\CodeWriterSettings.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CodeGen\CollectionNamer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CodeGen\DataAnnotationWriter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CodeGen\DataTypeWriter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CodeGen\ICollectionNamer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CodeGen\INamer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CodeGen\MappingNamer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CodeGen\NameFixer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CodeGen\Namer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CodeGen\Nester.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CodeGen\NHibernate\FluentMappingWriter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CodeGen\NHibernate\MappingWriter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CodeGen\OverrideWriter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CodeGen\PluralizingNamer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CodeGen\PrepareSchemaNames.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CodeGen\Procedures\ProcedureWriter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CodeGen\Procedures\SprocLogic.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CodeGen\Procedures\SprocResultType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CodeGen\Procedures\SprocResultWriter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CodeGen\Procedures\SprocWriter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CodeGen\ProjectWriter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CodeGen\UnitTestWriter.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Compare\CompareColumns.cs" />
     <Compile Include="Compare\CompareTables.cs" />
     <Compile Include="Compare\CompareSchemas.cs" />
@@ -261,11 +323,13 @@
     <None Include="DataSchema\ClassDiagram1.cd" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="CodeGen\Project.xml" />
     <Content Include="README.txt" />
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="CodeGen\Project.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
