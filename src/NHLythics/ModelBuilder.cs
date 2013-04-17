@@ -10,15 +10,39 @@ namespace NHLythics
 {
     public class ModelBuilder
     {
-        public ModelBuilder(Configuration configuration)
+        private Configuration _configuration;
+        private string _connectionString;
+
+        public ModelBuilder(Configuration configuration, string connectionString = null)
         {
-            var mappings = configuration.BuildMapping();
-            var s = mappings.ToString();
-            configuration.BuildMappings();
-            var classMappings = configuration.ClassMappings;
+            _configuration = configuration;
+            _connectionString = connectionString;
+            _configuration.BuildMappings();
+        }
 
+        public MappingModel Build()
+        {
+            List<DatabaseTable> tables = new List<DatabaseTable>();
+            if (!string.IsNullOrEmpty(_connectionString))
+            {
+                var schemaReader = new DatabaseReader(_connectionString, SqlType.SqlServer);
+                tables = schemaReader.AllTables().ToList();
+            }
+            
 
-            var schemaReader = new DatabaseReader(null, SqlType.SqlServer);
+            var mappingTables =
+                _configuration.ClassMappings.Select(cm => cm.Table)
+                              .Union(_configuration.CollectionMappings.Select(cm => cm.CollectionTable))
+                              .Where(t => t != null)
+                              .Distinct().ToList();
+
+            return new MappingModel
+                {
+                    Classes = _configuration.ClassMappings.ToList(),
+                    Collections = _configuration.CollectionMappings.ToList(),
+                    Tables = tables,
+                    MappingTables = mappingTables
+                };
         }
     }
 }

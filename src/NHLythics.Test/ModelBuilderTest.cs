@@ -16,11 +16,12 @@ namespace NHLythics.Test
         {
             DefaultArrange();
 
-            var builder = new ModelBuilder(Configuration);
+            var model = new ModelBuilder(Configuration).Build();
+
+            model.AnalyseClasses();
 
             // assert
-            builder.Should().BeNull();
+            model.Should().NotBeNull();
         }
-
     }
 }
