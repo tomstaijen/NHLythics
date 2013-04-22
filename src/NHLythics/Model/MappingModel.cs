@@ -16,10 +16,6 @@ namespace NHLythics.Model
         private IDictionary<string, Entity> _entities;
         public IDictionary<string, Entity> Entities { get { return _entities;  } }
 
-        public void Validate(Entity entity)
-        {
-        }
-
         public Entity GetEntityByName(string name)
         {
             if (!_entities.ContainsKey(name))
@@ -27,9 +23,9 @@ namespace NHLythics.Model
             return _entities[name];
         }
 
-        public void AddEntity(string name, Entity entity)
+        public void AddEntity(Entity entity)
         {
-            _entities.Add(name, entity);
+            _entities.Add(entity.Name, entity);
         }
     }
 }

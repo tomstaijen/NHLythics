@@ -12,7 +12,8 @@ namespace NHLythics.Test.TestModel
         public virtual long Id { get; set; }
         public virtual string Name { get; set; }
 
-        //public virtual B MyB { get; set; }
+        public virtual B MyB { get; set; }
+        public virtual C MyC { get; set; }
     }
 
     public class B
@@ -34,8 +35,9 @@ namespace NHLythics.Test.TestModel
         {
             Table("A");
             Id(e => e.Id).GeneratedBy.Native();
-            Map(e => e.Name, "Name").Length(40);
-            //References(e => e.MyB, "TheB").Not.Nullable();
+            Map(e => e.Name, "ilnombre").Length(40);
+            References(e => e.MyB, "TheB").Not.Nullable();
+            References(e => e.MyC, "SomeC").Not.Nullable();
             this.Synonym("NCyclopedie_new.dbo.ART");
         }
     }
@@ -57,7 +59,7 @@ namespace NHLythics.Test.TestModel
         {
             Table("C");
             Id(e => e.Id).GeneratedBy.Native();
-            HasManyToMany(c => c.As).ParentKeyColumn("C").ChildKeyColumn("A");
+            HasManyToMany(c => c.As).ParentKeyColumn("TheC").ChildKeyColumn("TheA").Table("C_A_X");
         }
     }
 }

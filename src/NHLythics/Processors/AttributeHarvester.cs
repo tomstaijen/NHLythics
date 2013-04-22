@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using NHLythics.Model;
+using NHibernate.Mapping;
 using Attribute = NHLythics.Model.Attribute;
 
 namespace NHLythics
@@ -32,10 +33,31 @@ namespace NHLythics
         {
             foreach (var cm in entity.Classes)
             {
-                foreach (var property in cm.PropertyIterator)
+                // TODO: put this into a union with the propertyiterator
+                if (cm.HasIdentifierProperty)
                 {
+                    var column = cm.IdentifierProperty.ColumnIterator.First() as Column;
+                    entity.AddAttribute(new ClassAttribute
+                        {
+                            Name = column.Text,
+                            Column = column,
+                            Parent = entity,
+                            Property = cm.IdentifierProperty,
+                            OwningClass = cm
+                        });
+                }
 
-                    var a = new ClassAttribute {Name = property.Name, Property = property, Parent = entity};
+                foreach (var property in cm.PropertyIterator.Where(p => p.ColumnIterator.Any()))
+                {
+                    var column = property.ColumnIterator.First() as Column;
+                    var a = new ClassAttribute
+                    {
+                        Name = column.Text,
+                        Property = property,
+                        Parent = entity,
+                        Column = column,
+                        OwningClass = cm
+                    };
 
                     if (a.Property.IsEntityRelation)
                     {
@@ -46,26 +68,34 @@ namespace NHLythics
                                     {
                                         Location = a,
                                         Solution = "ADD MAPPING",
-                                        Description = "Referenced class not mapped"
+                                        Description = "Referenced class not mapped",
                                     });
                         }
                     }
-                    entity.Attributes.Add(a);
+                    entity.AddAttribute(a);
                 }
+
             }
 
-            foreach (var cm in entity.Collections)
+            foreach (var fk in entity.MappingTable.ForeignKeyIterator)
             {
-                foreach (var column in cm.Key.ColumnIterator )
-                {
-                    entity.Attributes.Add(new Attribute
-                        {
-                            Name = column.Text, 
-                            ReferencedEntity = Model.GetEntityByName(cm.Table.Name)
-                        });
-                }
+                // currently only supports keys to non-composite id's
+                var column = fk.ColumnIterator.First();
 
-                RegisterProblem(new Problem {Description = "Help!"});
+                // it's already there, appearantly its also a reference
+                var attribute = entity.GetAttributeByName(column.Text);
+
+                if (attribute == null)
+                {
+                    attribute = new Attribute
+                    {
+                        Name = column.Name,
+                        Parent = entity,
+                        ReferencedEntity = Model.GetEntityByName(fk.ReferencedTable.Name),
+                        Column = column
+                    };
+                    entity.AddAttribute(attribute);
+                }
             }
         }
     }

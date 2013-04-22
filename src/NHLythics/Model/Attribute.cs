@@ -5,20 +5,12 @@ namespace NHLythics.Model
 {
     public class Attribute : Element
     {
-        public string Name { get; set; }
-        public Property Property { get; set; }
         public Element Parent { get; set; }
-
-        public Entity ReferencedEntity { get; set; }
         
-        public Column Column { 
-            get
-            {
-                if (Property == null)
-                    return null;
-                return Property.ColumnIterator.Single() as Column;
-            }
-        }
+        public Entity ReferencedEntity { get; set; }
+
+        public virtual Column Column { get; set; }
+
 
         public override string QualifiedName { get { return string.Format("{0}.{1}", Parent.Name, Name); } }
 

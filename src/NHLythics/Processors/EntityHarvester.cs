@@ -16,7 +16,7 @@ namespace NHLythics.Processors
             {
                 var entity = new Entity(Model) { Name = group.Key.Name };
                 entity.Classes.AddRange(group.ToList());
-                Model.AddEntity(entity.Name, entity);
+                Model.AddEntity(entity);
             }
 
             foreach (var group in Configuration.CollectionMappings.GroupBy(cm => cm.CollectionTable ?? cm.Table))
@@ -26,7 +26,7 @@ namespace NHLythics.Processors
                 if (entity == null)
                 {
                     entity = new Entity(Model) { Name = group.Key.Name };
-                    Model.AddEntity(entity.Name, entity);
+                    Model.AddEntity(entity);
                 }
                 entity.Collections.AddRange(group.ToList());
             }

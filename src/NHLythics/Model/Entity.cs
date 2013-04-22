@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using DatabaseSchemaReader.DataSchema;
 using NHibernate.Mapping;
+using NHLythics.Extensions;
 
 namespace NHLythics.Model
 {
@@ -20,11 +23,38 @@ namespace NHLythics.Model
 
         private readonly List<PersistentClass> _classes = new List<PersistentClass>();
         private readonly List<Collection> _collections = new List<Collection>();
-        private readonly List<Attribute> _attributes = new List<Attribute>();
+        private readonly Dictionary<string,Attribute> _attributes = new Dictionary<string, Attribute>();
 
         public List<PersistentClass> Classes { get { return _classes; } }
         public List<Collection> Collections { get { return _collections; } }
-        public List<Attribute> Attributes { get { return _attributes; } }
+        public ReadOnlyCollection<Attribute> Attributes { get { return _attributes.Values.ToList().AsReadOnly(); } }
+
+        /// <summary>
+        /// The attribute that holds the identity. Currently, we only support non-composite identity's.
+        /// </summary>
+        public Attribute IdentityAttribute { 
+            get
+            {
+                if (MappingTable.HasPrimaryKey)
+                {
+                    return
+                        Attributes.SingleOrDefault(a => a.Name == MappingTable.PrimaryKey.ColumnIterator.First().Name);
+                }
+                return null;
+            }
+        }
+
+        public Table MappingTable
+        {
+            get
+            {
+                if (_classes.Any())
+                    return _classes.First().Table;
+                if (_collections.Any())
+                    return _collections.First().CollectionTable;
+                return null;
+            }
+        }
 
         public DatabaseTable Table { get; set; }
 
@@ -55,6 +85,16 @@ namespace NHLythics.Model
             }
         }
 
+        public void AddAttribute(Attribute a)
+        {
+            _attributes.Add(a.Name, a);
+        }
+
+
+        public Attribute GetAttributeByName(string name)
+        {
+            return _attributes.GetValueOrDefault(name);
+        }
 
     }
 }

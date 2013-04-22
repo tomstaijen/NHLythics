@@ -23,7 +23,7 @@ namespace NHLythics
                 if (entity == null)
                 {
                     entity = new Entity(Model) { Name = table.Name, Table = table };
-                    Model.AddEntity(entity.Name, entity);
+                    Model.AddEntity(entity);
                     RegisterProblem(new UnknownTableProblem{ Location = entity, Solution = "DROP TABLE", Description = "Unknown table" });
                 }
                 else
