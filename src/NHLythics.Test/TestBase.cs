@@ -20,6 +20,11 @@ namespace NHLythics.Test
             }
         }
 
+        public string GetConnectionString(string datasource, string catalog, string user, string pass)
+        {
+            return string.Format("Data Source={0};Initial Catalog={1};User Id={2};Password={3};", datasource, catalog, user, pass);
+        }
+
         public void DefaultArrange()
         {
             _configuration = Fluently.Configure()

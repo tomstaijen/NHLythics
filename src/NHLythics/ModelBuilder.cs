@@ -4,45 +4,36 @@ using System.Linq;
 using System.Text;
 using DatabaseSchemaReader;
 using DatabaseSchemaReader.DataSchema;
+using NHLythics.Model;
+using NHLythics.Processors;
 using NHibernate.Cfg;
+using NHibernate.Mapping;
 
 namespace NHLythics
 {
     public class ModelBuilder
     {
-        private Configuration _configuration;
-        private string _connectionString;
-
-        public ModelBuilder(Configuration configuration, string connectionString = null)
+        private MappingModel _model;
+        
+        public ModelBuilder(MappingModel model)
         {
-            _configuration = configuration;
-            _connectionString = connectionString;
-            _configuration.BuildMappings();
+            _model = model;
         }
 
-        public MappingModel Build()
+        public void ApplyMappings(Configuration configuration)
         {
-            List<DatabaseTable> tables = new List<DatabaseTable>();
-            if (!string.IsNullOrEmpty(_connectionString))
-            {
-                var schemaReader = new DatabaseReader(_connectionString, SqlType.SqlServer);
-                tables = schemaReader.AllTables().ToList();
-            }
-            
+            Apply(new EntityHarvester { Configuration = configuration });
+            _model.Apply(new AttributeHarvester(_model));
+        }
 
-            var mappingTables =
-                _configuration.ClassMappings.Select(cm => cm.Table)
-                              .Union(_configuration.CollectionMappings.Select(cm => cm.CollectionTable))
-                              .Where(t => t != null)
-                              .Distinct().ToList();
+        public void Apply(IModelBuilderExtension builder)
+        {
+            _model.Problems.AddRange(builder.Build(_model));
+        }
 
-            return new MappingModel
-                {
-                    Classes = _configuration.ClassMappings.ToList(),
-                    Collections = _configuration.CollectionMappings.ToList(),
-                    Tables = tables,
-                    MappingTables = mappingTables
-                };
+        public void ApplyDatabase(string connectionString)
+        {
+            Apply(new TableFinder { ConnectionString = connectionString });
         }
     }
 }

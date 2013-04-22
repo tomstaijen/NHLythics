@@ -62,6 +62,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="SynonymRegistryTest.cs" />
     <Compile Include="TestModel\Entities.cs" />
     <Compile Include="ModelBuilderTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

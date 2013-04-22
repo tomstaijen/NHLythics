@@ -29,8 +29,8 @@ namespace NHLythics.Test.TestModel
             Table("A");
             Id(e => e.Id).GeneratedBy.Native();
             Map(e => e.Name, "Name").Length(40);
-            //References(e => e.MyB, "B").Not.Nullable();
-            //this.Synonym("OtherDatabase.dbo.Entity");
+            References(e => e.MyB, "TheB").Not.Nullable();
+            this.Synonym("NCyclopedie_new.dbo.ART");
         }
     }
 
