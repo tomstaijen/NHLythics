@@ -1,5 +1,8 @@
-﻿namespace NHLythics.Model
+﻿using System.Diagnostics;
+
+namespace NHLythics.Model
 {
+    [DebuggerDisplay("Element Name = {QualifiedName}")]
     public class Element
     {
         public string Name { get; set; }

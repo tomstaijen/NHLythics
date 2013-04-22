@@ -43,12 +43,4 @@ namespace NHLythics
         {
         }
     }
-
-    public static class TableValidatorCheckerExtensions
-    {
-        public static void ValidateDatabase(this ModelChecker checker)
-        {
-            checker.Apply(new TableValidator());
-        }
-    }
 }

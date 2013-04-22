@@ -15,5 +15,10 @@ namespace NHLythics.Model
         {
             get { return OwningClass.GetProperty(Name).IsEntityRelation; }
         }
+
+        public override bool IsOptional
+        {
+            get { return IsOfSubclassAndThusOptionalByDefinition || base.IsOptional; }
+        }
     }
 }

@@ -47,10 +47,10 @@ namespace NHLythics.Test
             var checker = ModelChecker.Build(b =>
                 {
                     b.ApplyMappings(Configuration);
-                    b.ApplyDatabase(GetConnectionString("192.168.0.2", "NSafe", "sa","iSaTiS1900"));
+                    //b.ApplyDatabase(GetConnectionString("192.168.0.2", "NSafe", "sa","iSaTiS1900"));
                 });
 
-            checker.ValidateDatabase();
+            checker.Validate();
 
             // assert
             Assert.That(!checker.Problems.Any());

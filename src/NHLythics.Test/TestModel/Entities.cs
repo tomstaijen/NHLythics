@@ -12,7 +12,7 @@ namespace NHLythics.Test.TestModel
         public virtual long Id { get; set; }
         public virtual string Name { get; set; }
 
-        public virtual B MyB { get; set; }
+        //public virtual B MyB { get; set; }
     }
 
     public class B
@@ -22,6 +22,12 @@ namespace NHLythics.Test.TestModel
         public virtual ICollection<A> As { get; set; }
     }
 
+    public class C
+    {
+        public virtual long Id { get; set; }
+        public ICollection<A> As { get; set; }
+    }
+
     class AMap : ClassMap<A>
     {
         public AMap()
@@ -29,7 +35,7 @@ namespace NHLythics.Test.TestModel
             Table("A");
             Id(e => e.Id).GeneratedBy.Native();
             Map(e => e.Name, "Name").Length(40);
-            References(e => e.MyB, "TheB").Not.Nullable();
+            //References(e => e.MyB, "TheB").Not.Nullable();
             this.Synonym("NCyclopedie_new.dbo.ART");
         }
     }
@@ -42,6 +48,16 @@ namespace NHLythics.Test.TestModel
             //DiscriminateSubClassesOnColumn.("class");
             Id(e => e.Id).GeneratedBy.Native();
             HasMany(e => e.As).KeyColumn("TheB");
+        }
+    }
+
+    class CMap : ClassMap<C>
+    {
+        public CMap()
+        {
+            Table("C");
+            Id(e => e.Id).GeneratedBy.Native();
+            HasManyToMany(c => c.As).ParentKeyColumn("C").ChildKeyColumn("A");
         }
     }
 }

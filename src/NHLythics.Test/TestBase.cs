@@ -31,6 +31,7 @@ namespace NHLythics.Test
                     .Database(MsSqlConfiguration.MsSql2008)
                     .Mappings(m => m.FluentMappings.AddFromAssembly(this.GetType().Assembly))
                     .BuildConfiguration();
+            _configuration.BuildMappings();
         }
     }
 }

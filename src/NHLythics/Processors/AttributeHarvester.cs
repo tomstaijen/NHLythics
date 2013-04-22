@@ -35,7 +35,7 @@ namespace NHLythics
                 foreach (var property in cm.PropertyIterator)
                 {
 
-                    var a = new Attribute {Name = property.Name, Property = property, Parent = entity};
+                    var a = new ClassAttribute {Name = property.Name, Property = property, Parent = entity};
 
                     if (a.Property.IsEntityRelation)
                     {
@@ -52,6 +52,20 @@ namespace NHLythics
                     }
                     entity.Attributes.Add(a);
                 }
+            }
+
+            foreach (var cm in entity.Collections)
+            {
+                foreach (var column in cm.Key.ColumnIterator )
+                {
+                    entity.Attributes.Add(new Attribute
+                        {
+                            Name = column.Text, 
+                            ReferencedEntity = Model.GetEntityByName(cm.Table.Name)
+                        });
+                }
+
+                RegisterProblem(new Problem {Description = "Help!"});
             }
         }
     }

@@ -21,5 +21,15 @@ namespace NHLythics.Model
         }
 
         public override string QualifiedName { get { return string.Format("{0}.{1}", Parent.Name, Name); } }
+
+        public virtual bool IsOptional
+        {
+            get { return Column.IsNullable; }
+        }
+
+        public string Type
+        {
+            get { return Column.SqlType; }
+        }
     }
 }

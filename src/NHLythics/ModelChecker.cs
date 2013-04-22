@@ -9,20 +9,21 @@ namespace NHLythics
         private List<Problem> _problems = new List<Problem>();
         public List<Problem> Problems { get { return _problems; } }
 
-        protected ModelChecker(MappingModel model)
+        private List<Action<ModelChecker>> _actions = new List<Action<ModelChecker>>();
+        protected ModelChecker(MappingModel model, ICollection<Action<ModelChecker>> actions)
         {
             Model = model;
+            _actions.AddRange(actions);
         }
 
         public static ModelChecker Build(Action<ModelBuilder> config)
         {
             var model = new MappingModel();
-            var checker = new ModelChecker(model);
-            var builder = new ModelBuilder(checker);
+            var builder = new ModelBuilder();
 
             config(builder);
 
-            return checker;
+            return new ModelChecker(model, builder.Actions);
         }
 
         public MappingModel Model { get; private set; }
@@ -43,6 +44,14 @@ namespace NHLythics
         public void RegisterProblem(Problem problem)
         {
             _observers.ForEach(o => o.Notify(problem));
+        }
+
+        public void Validate()
+        {
+            foreach (var a in _actions)
+            {
+                a(this);
+            }
         }
     }
 
