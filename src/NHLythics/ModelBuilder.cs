@@ -13,27 +13,27 @@ namespace NHLythics
 {
     public class ModelBuilder
     {
-        private MappingModel _model;
+        private ModelChecker _checker;
         
-        public ModelBuilder(MappingModel model)
+        private List<Action> _actions = new List<Action>();
+
+        public ModelBuilder(ModelChecker checker)
         {
-            _model = model;
+            _checker = checker;
         }
 
         public void ApplyMappings(Configuration configuration)
         {
-            Apply(new EntityHarvester { Configuration = configuration });
-            _model.Apply(new AttributeHarvester(_model));
-        }
-
-        public void Apply(IModelBuilderExtension builder)
-        {
-            _model.Problems.AddRange(builder.Build(_model));
+            _actions.Add(() =>
+                {
+                    _checker.Apply(new EntityHarvester { Configuration = configuration });
+                    _checker.Apply(new AttributeHarvester());
+                });
         }
 
         public void ApplyDatabase(string connectionString)
         {
-            Apply(new TableFinder { ConnectionString = connectionString });
+            _actions.Add(() => _checker.Apply(new TableFinder { ConnectionString = connectionString }));
         }
     }
 }

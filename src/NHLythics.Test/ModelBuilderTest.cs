@@ -11,21 +11,49 @@ namespace NHLythics.Test
     [TestFixture]
     public class ModelBuilderTest : TestBase
     {
+        /// <summary>
+        /// 
+        /// ***LOADING***
+        /// 
+        /// 1. Load Model from Configuration
+        ///    a. Collect entities
+        ///    b. Harvest attributes               => Report unknown types, report non-virtual public/protected stuffs (optional?)
+        /// 
+        /// 2. Check for synonyms (is done on the fly)
+        /// 
+        /// 3. (DB) Find tables for entities       => Report missing table, Report extra tables
+        ///    (DB) a. Find synonyms for synonyms  => Report missing synonym
+        ///    (DB) b. Find tables for synonyms    => Report missing table
+        /// 
+        /// ***CHECKING***
+        /// 
+        /// B. (DB) Check column types
+        /// C. (DB) Check for problematic extra columns
+        /// D. (DB) Check missing foreign keys
+        /// E. (DB) Check for foreign keys to erasable data
+        /// 
+        /// ***OUTPUT***
+        /// I. Print table info
+        /// II. Print createscript
+        /// III. Print problems with severity
+        /// IV. 
+        /// </summary>
         [Test]
         public void CanBuildModel()
         {
             DefaultArrange();
 
-            var model = MappingModel.Build(b =>
+
+            var checker = ModelChecker.Build(b =>
                 {
                     b.ApplyMappings(Configuration);
-                    //b.ApplyDatabase(GetConnectionString("192.168.0.2", "NSafe", "sa","iSaTiS1900"));
+                    b.ApplyDatabase(GetConnectionString("192.168.0.2", "NSafe", "sa","iSaTiS1900"));
                 });
 
-            model.ValidateDatabase();
+            checker.ValidateDatabase();
 
             // assert
-            Assert.That(model.Problems.Any());
+            Assert.That(!checker.Problems.Any());
         }
     }
 }

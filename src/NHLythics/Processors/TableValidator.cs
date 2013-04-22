@@ -9,45 +9,46 @@ using Attribute = NHLythics.Model.Attribute;
 
 namespace NHLythics
 {
-    class TableValidator : IEntityProcessor
+    class TableValidator : EntityCheckerBase
     {
-        public IEnumerable<Problem> Process(Entity entity)
+        public override void Check(Entity entity)
         {
             if (entity.Table == null)
-                yield return new Problem {Location = entity, Description = "Table not found" };
+            {
+                RegisterProblem(new Problem {Location = entity, Description = "Table not found"});
+                return;
+            }
+
 
             var pair = entity.Table.Columns.Pair(entity.Attributes, (c, a) => c.Name == a.Column.Name);
             
             foreach (var noS in pair.NoFirst)
             {
-                yield return new Problem() {Location = noS, Description = "Missing column", Solution = "Add column"};
+                RegisterProblem(new Problem() {Location = noS, Description = "Missing column", Solution = "Add column"});
             }
             foreach (var noF in pair.NoSecond)
             {
                 if( !noF.Nullable)
-                    yield return new Problem { Location = entity, Description = "Extra column NOT NULLABLE", Solution = "Remove column"};
+                    RegisterProblem(new Problem { Location = entity, Description = "Extra column NOT NULLABLE", Solution = "Remove column"});
                 else
-                    yield return new Problem { Location = entity, Description = "Extra column", Solution = "Remove column" };
+                    RegisterProblem(new Problem { Location = entity, Description = "Extra column", Solution = "Remove column" });
             }
             foreach (var p in pair.Matches)
             {
-                var problem = ValidateColumn(p.Item2, p.Item1);
-                if (problem != null)
-                    yield return problem;
+                ValidateColumn(p.Item2, p.Item1);
             }
         }
 
-        public Problem ValidateColumn(Attribute attribute, DatabaseColumn column)
+        public void ValidateColumn(Attribute attribute, DatabaseColumn column)
         {
-            return null;
         }
     }
 
-    public static class TableValidatorModelExtensions
+    public static class TableValidatorCheckerExtensions
     {
-        public static void ValidateDatabase(this MappingModel model)
+        public static void ValidateDatabase(this ModelChecker checker)
         {
-            model.Apply(new TableValidator());
+            checker.Apply(new TableValidator());
         }
     }
 }

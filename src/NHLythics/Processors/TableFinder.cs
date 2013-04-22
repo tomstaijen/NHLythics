@@ -9,33 +9,33 @@ using NHLythics.Model;
 
 namespace NHLythics
 {
-    public class TableFinder : IModelBuilderExtension
+    public class TableFinder : ModelCheckerModuleBase
     {
         public string ConnectionString { get; set; }
 
-        public IEnumerable<Problem> Build(MappingModel model)
+        public override void Run()
         {
             var databaseReader = new DatabaseReader(ConnectionString, SqlType.SqlServer);
 
             foreach (var table in databaseReader.AllTables())
             {
-                var entity = model.GetEntityByName(table.Name);
+                var entity = Model.GetEntityByName(table.Name);
                 if (entity == null)
                 {
-                    entity = new Entity(model) {Name = table.Name, Table = table};
-                    model.AddEntity(entity.Name, entity);
-                    yield return new UnknownTableProblem{ Location = entity, Solution = "DROP TABLE", Description = "Unknown table" };
+                    entity = new Entity(Model) { Name = table.Name, Table = table };
+                    Model.AddEntity(entity.Name, entity);
+                    RegisterProblem(new UnknownTableProblem{ Location = entity, Solution = "DROP TABLE", Description = "Unknown table" });
                 }
                 else
                 {
                     entity.Table = table;
                     if (entity.IsSynonym)
-                        yield return new Problem {Location = entity, Solution = "REMOVE SYNONYM", Description = "Table exist for synonym"};
+                        RegisterProblem(new Problem {Location = entity, Solution = "REMOVE SYNONYM", Description = "Table exist for synonym"});
                 }
             }
 
             // van alle synoniemen de target table zoeken
-            var entitiesByDatabase = model.Entities.Where(e => e.Value.IsSynonym).Select(e => e.Value).GroupBy(e => e.Synonym.Database);
+            var entitiesByDatabase = Model.Entities.Where(e => e.Value.IsSynonym).Select(e => e.Value).GroupBy(e => e.Synonym.Database);
 
             foreach (var db in entitiesByDatabase)
             {

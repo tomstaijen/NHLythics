@@ -7,14 +7,8 @@ using Attribute = NHLythics.Model.Attribute;
 
 namespace NHLythics
 {
-    public class AttributeHarvester : IEntityProcessor
+    public class AttributeHarvester : EntityCheckerBase
     {
-        private MappingModel _model;
-        public AttributeHarvester(MappingModel model)
-        {
-            _model = model;
-        }
-
         private IDictionary<Type, Entity> _typeMap;
 
         public IDictionary<Type, Entity> GetTypeMap()
@@ -22,7 +16,7 @@ namespace NHLythics
             if (_typeMap == null)
             {
                 _typeMap = new Dictionary<Type, Entity>();
-                foreach (var e in _model.Entities.Values)
+                foreach (var e in ModelChecker.Model.Entities.Values)
                 {
                     foreach (var cm in e.Classes)
                     {
@@ -34,29 +28,31 @@ namespace NHLythics
             return _typeMap;
         }
 
-
-
-        public IEnumerable<Problem> Process(Entity entity)
+        public override void Check(Entity entity)
         {
             foreach (var cm in entity.Classes)
             {
                 foreach (var property in cm.PropertyIterator)
                 {
 
-                    var a = new Attribute {Name = property.Name, Property = property, Parent = entity };
+                    var a = new Attribute {Name = property.Name, Property = property, Parent = entity};
 
                     if (a.Property.IsEntityRelation)
                     {
                         a.ReferencedEntity = GetTypeMap()[a.Property.Type.ReturnedClass];
                         if (a.ReferencedEntity == null)
                         {
-                            yield return new Problem {Location = a, Solution = "ADD MAPPING", Description= "Referenced class not mapped"};
+                            RegisterProblem(new Problem
+                                    {
+                                        Location = a,
+                                        Solution = "ADD MAPPING",
+                                        Description = "Referenced class not mapped"
+                                    });
                         }
                     }
                     entity.Attributes.Add(a);
                 }
             }
-            //return Enumerable.Empty<Problem>();
         }
     }
 }

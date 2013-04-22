@@ -48,8 +48,10 @@
   <ItemGroup>
     <Compile Include="Extensions\CollectionExtensions.cs" />
     <Compile Include="Extensions\ConnectionStringExtionsions.cs" />
-    <Compile Include="IModelBuilder.cs" />
+    <Compile Include="Handlers\ProblemCollecter.cs" />
+    <Compile Include="IModelCheckerHandler.cs" />
     <Compile Include="Model\Attribute.cs" />
+    <Compile Include="ModelChecker.cs" />
     <Compile Include="Processors\EntityHarvester.cs" />
     <Compile Include="Processors\AttributeHarvester.cs" />
     <Compile Include="Model\ClassAttribute.cs" />
