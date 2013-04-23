@@ -1,9 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using DatabaseSchemaReader;
 using DatabaseSchemaReader.DataSchema;
+using FluentNHibernate.Cfg;
+using FluentNHibernate.Cfg.Db;
 using NHLythics.Model;
 using NHLythics.Processors;
 using NHibernate.Cfg;

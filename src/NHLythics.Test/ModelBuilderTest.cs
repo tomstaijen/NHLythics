@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using FluentAssertions;
+using NHLythics.FluentLoading;
 using NHLythics.Model;
 using NUnit.Framework;
 
@@ -43,10 +46,13 @@ namespace NHLythics.Test
         {
             DefaultArrange();
 
+            string[] files = Directory.GetFiles(@"C:\Users\tom\Repositories\NControl\Source\NControl\NControl.NHibernate\bin\Release", "NControl.*.dll");
+            var assemblies = files.Select(f => Assembly.LoadFrom(f)).ToArray();
 
             var checker = ModelChecker.Build(b =>
                 {
-                    b.ApplyMappings(Configuration);
+                    b.WithMappingsFromAssembliesIn(assemblies);
+                    //b.ApplyMappings(Configuration);
                     //b.ApplyDatabase(GetConnectionString("192.168.0.2", "NSafe", "sa","iSaTiS1900"));
                 });
 
