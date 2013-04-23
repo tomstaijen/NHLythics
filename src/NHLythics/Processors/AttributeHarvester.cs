@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NHLythics.Extensions;
 using NHLythics.Model;
 using NHibernate.Mapping;
 using Attribute = NHLythics.Model.Attribute;
@@ -34,7 +35,7 @@ namespace NHLythics
             foreach (var cm in entity.Classes)
             {
                 // TODO: put this into a union with the propertyiterator
-                if (cm.HasIdentifierProperty)
+                if (cm.HasIdentifierProperty && cm.IdentifierProperty.PersistentClass == cm)
                 {
                     var column = cm.IdentifierProperty.ColumnIterator.First() as Column;
                     entity.AddAttribute(new ClassAttribute
@@ -61,7 +62,7 @@ namespace NHLythics
 
                     if (a.Property.IsEntityRelation)
                     {
-                        a.ReferencedEntity = GetTypeMap()[a.Property.Type.ReturnedClass];
+                        a.ReferencedEntity = GetTypeMap().GetValueOrDefault(a.Property.Type.ReturnedClass);
                         if (a.ReferencedEntity == null)
                         {
                             RegisterProblem(new Problem
@@ -72,7 +73,20 @@ namespace NHLythics
                                     });
                         }
                     }
-                    entity.AddAttribute(a);
+
+                    if (entity.GetAttributeByName(a.Name) != null)
+                    {
+                        RegisterProblem(new Problem
+                            {
+                                Location = entity,
+                                Description = "Double mapped property " + a.Name
+                            });
+                    }
+                    else
+                    {
+                        entity.AddAttribute(a);    
+                    }
+                    
                 }
 
             }

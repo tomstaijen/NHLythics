@@ -43,6 +43,7 @@ namespace NHLythics
 
         public void RegisterProblem(Problem problem)
         {
+            _problems.Add(problem);
             _observers.ForEach(o => o.Notify(problem));
         }
 

@@ -46,14 +46,12 @@ namespace NHLythics.Test
         {
             DefaultArrange();
 
-            string[] files = Directory.GetFiles(@"C:\Users\tom\Repositories\NControl\Source\NControl\NControl.NHibernate\bin\Release", "NControl.*.dll");
-            var assemblies = files.Select(f => Assembly.LoadFrom(f)).ToArray();
+            var assemblies = new [] { typeof (NControl.NCyclopedie.NHibernate.Model.ArtikelConditieMap).Assembly } ;
 
             var checker = ModelChecker.Build(b =>
                 {
-                    b.WithMappingsFromAssembliesIn(assemblies);
-                    //b.ApplyMappings(Configuration);
-                    //b.ApplyDatabase(GetConnectionString("192.168.0.2", "NSafe", "sa","iSaTiS1900"));
+                    b.UseConfigurationWithMappingsFromAssemblies(assemblies);
+                    b.ApplyDatabase(GetConnectionString("192.168.0.2", "NSafe", "sa","iSaTiS1900"));
                 });
 
             checker.Validate();
