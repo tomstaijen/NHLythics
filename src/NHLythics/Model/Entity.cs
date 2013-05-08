@@ -29,21 +29,6 @@ namespace NHLythics.Model
         public List<Collection> Collections { get { return _collections; } }
         public ReadOnlyCollection<Attribute> Attributes { get { return _attributes.Values.ToList().AsReadOnly(); } }
 
-        /// <summary>
-        /// The attribute that holds the identity. Currently, we only support non-composite identity's.
-        /// </summary>
-        public Attribute IdentityAttribute { 
-            get
-            {
-                if (MappingTable.HasPrimaryKey)
-                {
-                    return
-                        Attributes.SingleOrDefault(a => a.Name == MappingTable.PrimaryKey.ColumnIterator.First().Name);
-                }
-                return null;
-            }
-        }
-
         public Table MappingTable
         {
             get
@@ -63,12 +48,34 @@ namespace NHLythics.Model
             get { return _classes.Any() || _collections.Any(); }
         }
 
+        public bool IsReadOnly
+        {
+            get { return Classes.Any() && !Classes.Any(c => c.IsMutable); }
+        }
+
+        public bool IsTable
+        {
+            get { return !IsView && !IsSPResult && MappingTable != null; }
+        }
+
+        public bool IsView
+        {
+            get { return Classes.Count == 1 && ModelRegistry.IsView(Classes.Single().MappedClass); }
+        }
+
+        public bool IsSPResult
+        {
+            get { return Classes.Count == 1 && ModelRegistry.IsSP(Classes.Single().MappedClass); }
+        }
+
         public bool IsSynonym
         {
             get
             {
                 if (Classes.Any())
                     return ModelRegistry.IsSynonym(Classes.First().MappedClass);
+                if (Collections.Any())
+                    return ModelRegistry.IsSynonym(MappingTable.Name);
                 return false;
             }
         }
@@ -78,9 +85,9 @@ namespace NHLythics.Model
             get
             {
                 if (Classes.Any())
-                {
                     return ModelRegistry.GetSynonym(Classes.First().MappedClass);
-                }
+                if (Collections.Any())
+                    return ModelRegistry.GetSynonym(MappingTable.Name);
                 return null;
             }
         }

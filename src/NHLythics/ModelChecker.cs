@@ -1,11 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
 using NHLythics.Model;
+using NHibernate.Cfg;
+using NHibernate.Dialect;
+using NHibernate.Engine;
 
 namespace NHLythics
 {
     public class ModelChecker
     {
+        public Configuration Configuration { get; set; }
+
+        public IMapping Mapping
+        {
+            get { return Configuration.BuildMapping(); }
+        }
+
+        public Dialect Dialect
+        {
+            get { return Dialect.GetDialect(Configuration.Properties); }
+        }
+
         private List<Problem> _problems = new List<Problem>();
         public List<Problem> Problems { get { return _problems; } }
 
@@ -65,6 +80,12 @@ namespace NHLythics
         {
             ModelChecker.RegisterProblem(problem);
         }
+
+        public void RegisterProblem(ProblemType type, Severity severity, Element location, string details = null)
+        {
+            ModelChecker.RegisterProblem(Problem.Create(type, severity, location, details));
+        }
+
 
         public abstract void Run();
     }

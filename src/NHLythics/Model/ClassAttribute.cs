@@ -9,16 +9,6 @@ namespace NHLythics.Model
 
         public Property Property { get; set; }
 
-        public override Column Column {
-            get
-            {
-                if (Property == null)
-                    return null;
-                return Property.ColumnIterator.Single() as Column;
-            }
-        }
-
-
         public bool IsOfSubclassAndThusOptionalByDefinition
         {
             get { return OwningClass.Superclass != null; }

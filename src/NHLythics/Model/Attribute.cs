@@ -24,4 +24,12 @@ namespace NHLythics.Model
             get { return Column.SqlType; }
         }
     }
+
+    public class DiscriminatorAttribute : ClassAttribute
+    {
+        public override bool IsOptional
+        {
+            get { return false; }
+        }
+    }
 }

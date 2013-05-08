@@ -34,6 +34,20 @@ namespace NHLythics
         {
             foreach (var cm in entity.Classes)
             {
+                if (cm.Discriminator != null)
+                {
+                    var column = cm.Discriminator.ColumnIterator.First() as Column;
+                    
+                    if (entity.GetAttributeByName(column.Name) == null) // add just once, all subclasses also have the discriminator
+                        entity.AddAttribute(new DiscriminatorAttribute
+                            {
+                                Name = column.Name,
+                                Parent = entity,
+                                OwningClass = cm,
+                                Column = column
+                            });
+                }
+
                 // TODO: put this into a union with the propertyiterator
                 if (cm.HasIdentifierProperty && cm.IdentifierProperty.PersistentClass == cm)
                 {
@@ -47,48 +61,18 @@ namespace NHLythics
                             OwningClass = cm
                         });
                 }
+                else if (cm.Identifier is Component)
+                {
+                    foreach (var property in (cm.Identifier as Component).PropertyIterator)
+                    {
+                        HandleProperty(entity, cm, property);
+                    }
+                }
 
                 foreach (var property in cm.PropertyIterator.Where(p => p.ColumnIterator.Any()))
                 {
-                    var column = property.ColumnIterator.First() as Column;
-                    var a = new ClassAttribute
-                    {
-                        Name = column.Text,
-                        Property = property,
-                        Parent = entity,
-                        Column = column,
-                        OwningClass = cm
-                    };
-
-                    if (a.Property.IsEntityRelation)
-                    {
-                        a.ReferencedEntity = GetTypeMap().GetValueOrDefault(a.Property.Type.ReturnedClass);
-                        if (a.ReferencedEntity == null)
-                        {
-                            RegisterProblem(new Problem
-                                    {
-                                        Location = a,
-                                        Solution = "ADD MAPPING",
-                                        Description = "Referenced class not mapped",
-                                    });
-                        }
-                    }
-
-                    if (entity.GetAttributeByName(a.Name) != null)
-                    {
-                        RegisterProblem(new Problem
-                            {
-                                Location = entity,
-                                Description = "Double mapped property " + a.Name
-                            });
-                    }
-                    else
-                    {
-                        entity.AddAttribute(a);    
-                    }
-                    
+                    HandleProperty(entity, cm, property);
                 }
-
             }
 
             foreach (var fk in entity.MappingTable.ForeignKeyIterator)
@@ -102,14 +86,70 @@ namespace NHLythics
                 if (attribute == null)
                 {
                     attribute = new Attribute
-                    {
-                        Name = column.Name,
-                        Parent = entity,
-                        ReferencedEntity = Model.GetEntityByName(fk.ReferencedTable.Name),
-                        Column = column
-                    };
+                        {
+                            Name = column.Name,
+                            Parent = entity,
+                            ReferencedEntity = Model.GetEntityByName(fk.ReferencedTable.Name),
+                            Column = column
+                        };
                     entity.AddAttribute(attribute);
                 }
+                else
+                {
+                    // TODO: this should be a ClassAttribute that references some type, check that?
+                }
+            }
+        }
+
+
+        public void HandleProperty(Entity entity, PersistentClass cm, Property property, Component component = null)
+        {
+            if (property.IsComposite)
+            {
+                var comp = property.Value as Component;
+                foreach (var p in comp.PropertyIterator.Where(p => p.ColumnIterator.Any()))
+                {
+                    HandleProperty(entity, cm, p, comp);
+                }
+                return;
+            }
+
+            dynamic column = property.ColumnIterator.First();
+            if (column is Formula)
+            {
+                // todo: what to do with these?
+                return;
+            }
+
+            column = column as Column;
+
+            var a = new ClassAttribute
+                {
+                    Name = column.Text,
+                    Property = property,
+                    Parent = entity,
+                    Column = column,
+                    OwningClass = cm
+                };
+
+            if (a.Property.IsEntityRelation)
+            {
+                a.ReferencedEntity = GetTypeMap().GetValueOrDefault(a.Property.Type.ReturnedClass);
+                if (a.ReferencedEntity == null)
+                {
+                    RegisterProblem(ProblemType.UnknownClass, Severity.Critical, a);
+                }
+            }
+
+            var attr = entity.GetAttributeByName(a.Name);
+            if ( attr != null)
+            {
+                RegisterProblem(ProblemType.DoubleProperty, Severity.Important, attr,
+                                "Also found in " + cm.MappedClass.Name + ", can be bad when types differ.");
+            }
+            else
+            {
+                entity.AddAttribute(a);
             }
         }
     }

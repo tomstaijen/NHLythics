@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 namespace NHLythics.Util
@@ -15,6 +16,11 @@ namespace NHLythics.Util
         private Dictionary<string, Assembly> assemblies = new Dictionary<string, Assembly>();
         /* the types in the assemblies by name */
         private Dictionary<string, Type> types = new Dictionary<string, Type>();
+
+        public Assembly[] Assemblies
+        {
+            get { return assemblies.Values.ToArray(); }
+        }
 
         public IEnumerable<Type> Types
         {
@@ -52,14 +58,10 @@ namespace NHLythics.Util
             AssemblyName[] reffed = load(basename);
             foreach (var name in reffed)
             {
-                if (name.Name.ToLower().StartsWith("force.") || name.Name.ToLower().StartsWith("fms.") ||
-                    name.Name.ToLower().StartsWith("quion."))
-                {
                     if (!assemblies.ContainsKey(name.Name))
                     {
                         loadAll(name.Name);
                     }
-                }
             }
         }
 

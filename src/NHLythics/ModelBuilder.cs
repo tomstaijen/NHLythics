@@ -11,6 +11,7 @@ using FluentNHibernate.Cfg.Db;
 using NHLythics.Model;
 using NHLythics.Processors;
 using NHibernate.Cfg;
+using NHLythics.Extensions;
 using NHibernate.Mapping;
 
 namespace NHLythics
@@ -28,11 +29,26 @@ namespace NHLythics
 
         public void UseConfiguration(Configuration configuration)
         {
+            configuration.BuildMappings();
             _actions.Add(c =>
                 {
+                    c.Configuration = configuration;
                     c.Apply(new EntityHarvester { Configuration = configuration });
                     c.Apply(new AttributeHarvester());
                 });
+        }
+
+        public void LoadMappingsFrom(string directory, string filepattern = "*.dll")
+        {
+            var assemblyFiles = Directory.GetFiles(directory, filepattern);
+            var assemblies = assemblyFiles.Select(f => Assembly.LoadFrom(f)).ToArray();
+            UseConfigurationWithMappingsFromAssemblies(assemblies);
+
+            var lookup = assemblies.ToDictionary(a => a.FullName, a => a);
+            AppDomain.CurrentDomain.AssemblyResolve += (o, aR) =>
+                {
+                    return lookup.GetValueOrDefault(aR.Name);
+                };
         }
 
         public void UseConfigurationWithMappingsFromAssemblies(Assembly[] assemblies)
@@ -55,7 +71,7 @@ namespace NHLythics
             _actions.Add(c =>
                 {
                     c.Apply(new TableFinder {ConnectionString = connectionString});
-                    c.Apply(new TableValidator());
+                    c.Apply(new TableValidator(c.Dialect, c.Mapping));
                 });
         }
     }
